@@ -1,21 +1,30 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import api from '../services/api';
+import { IProduct } from '../store/modules/cart/types';
 
 const Catalog: React.FC = () => {
-  /*
-    O hook receberá uma função que recebe o estado todo e permite que
-    seja retornado para o compoenente apenas o que será útil para ele.
-  */
-  const catalog = useSelector(state => state);
-  /*
-    Dessa forma, o componente não será atualizado quando o estado todo mudar,
-    e sim quando o que é retornado pelo useSelector mudar.
-  */
+  const [catalog, setCatalog] = useState<IProduct[]>([]);
 
-  console.log(catalog);
+  useEffect(() => {
+    api.get('products').then(response => {
+      setCatalog(response.data);
+    });
+  }, []);
 
   return (
-    <h1>Catálogo</h1>
+    <main>
+      <h1>Catálogo</h1>
+
+      {catalog.map(product => (
+        <article key={product.id}>
+          <strong>{product.title}</strong>
+          {' - '}
+          <span>{product.price}</span>
+          {'  '}
+          <button type="button">Comprar</button>
+        </article>
+      ))}
+    </main>
   )
 }
 
